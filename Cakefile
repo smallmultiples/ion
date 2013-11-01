@@ -22,6 +22,6 @@ out = "lib/ion.js"
 min = "lib/ion-min.js"
 
 task 'build', 'builds the ion parser', ->
-	exec "coffee -p -c ion.coffee > #{out}", ->
-		exec "coffee ion.coffee package.ion > package.json", ->
+	exec "mkdir -p lib", ->
+		exec "coffee -p -c ion.coffee > #{out}", ->
 			exec "uglifyjs #{out} > #{min}"

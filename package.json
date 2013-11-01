@@ -1,40 +1,46 @@
 {
-    "name": "ion",
-    "preferGlobal": true,
-    "version": "0.5.7",
-    "created": "2012-08-06T00:00:00.000Z",
-    "author": "Kris Nye <krisnye@gmail.com>",
-    "description": "Indented Object Notation is a YAML inspired, JSON compatible object serialization format that is optimized for human authoring and readability.\nWhenever possible, quotes, brackets and escape characters are not required and structure is implied by indentation.",
-    "contributors": [
-        {
-            "name": "Kris Nye",
-            "email": "krisnye@gmail.com"
-        },
-        {
-            "name": "John Weiss",
-            "email": "bitweiss@gmail.com"
-        }
-    ],
-    "bin": {},
-    "scripts": {
-        "glass": "node ./parser.js"
+  "name": "ion",
+  "preferGlobal": true,
+  "version": "0.5.7",
+  "created": "2012-08-06T00:00:00.000Z",
+  "author": "Kris Nye <krisnye@gmail.com>",
+  "description": "Indented Object Notation is a YAML inspired, JSON compatible object serialization format that is optimized for human authoring and readability.\nWhenever possible, quotes, brackets and escape characters are not required and structure is implied by indentation.",
+  "contributors": [
+    {
+      "name": "Kris Nye",
+      "email": "krisnye@gmail.com"
     },
-    "main": "./lib/ion",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/krisnye/ion.git"
-    },
-    "keywords": [
-        "ion",
-        "JSON",
-        "YAML",
-        "Coffee",
-        "Coffeescript"
-    ],
-    "noAnalyze": true,
-    "bundleDependencies": [],
-    "license": "MIT",
-    "engine": {
-        "node": ">=0.4"
+    {
+      "name": "John Weiss",
+      "email": "bitweiss@gmail.com"
     }
+  ],
+  "bin": {},
+  "scripts": {
+    "glass": "node ./parser.js",
+    "prepublish": "cake build"
+  },
+  "main": "./lib/ion",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/krisnye/ion.git"
+  },
+  "keywords": [
+    "ion",
+    "JSON",
+    "YAML",
+    "Coffee",
+    "Coffeescript"
+  ],
+  "noAnalyze": true,
+  "bundleDependencies": [],
+  "license": "MIT",
+  "engine": {
+    "node": ">=0.4"
+  },
+  "devDependencies": {
+    "uglify-js": "~2.4.1",
+    "coffee-script": "~1.6.3",
+    "cake": "~0.1.1"
+  }
 }
