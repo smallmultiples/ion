@@ -194,6 +194,121 @@ nest = (nodes) ->
 		stack.push node
 	root
 
+# stringify variables
+obj_delim = ['','']
+arr_delim = ['','']
+sep = ''
+
+quote = (string) ->   
+	#dummy function for now...
+	return string
+
+wordwrap = (str, width, brk, cut) ->
+	brk = brk or "\n"
+	width = width or 75
+	cut = cut or false
+	return str  unless str
+	regex = ".{1," + width + "}(\\s|$)" + ((if cut then "|.{" + width + "}|.+$" else "|\\S+?(\\s|$)"))
+	str.match(RegExp(regex, "g")).map((s)->s.replace(/\n$/,'')).join(brk)
+
+str = (key, holder,first_run=false,gap=0,indent,rep) ->    
+	# Produce a string from holder[key].
+	i = undefined # The loop counter.
+	k = undefined
+	v = undefined
+	length = undefined
+	# The member key.
+	# The member value.
+	mind = gap
+	partial = undefined
+	value = holder[key]
+	
+	# If the value has a toJSON method, call it to obtain a replacement value.
+		
+	# If we were called with a replacer function, then call the replacer to
+	# obtain a replacement value.
+	value = rep.call(holder, key, value)  if typeof rep is "function"
+	
+	if not first_run
+		gap += indent
+
+	# What happens next depends on the value's type.
+	switch typeof value
+		when "string"
+			if value.indexOf("\n") >= 0
+				"\n"+gap+wordwrap(value, 75, "\n"+gap)
+			else
+				value
+		when "number"
+			
+			# JSON numbers must be finite. Encode non-finite numbers as null.
+			(if isFinite(value) then String(value) else "null")
+		when "boolean", "null"
+			
+			# If the value is a boolean or null, convert it to a string. Note:
+			# typeof null does not produce 'null'. The case is included here in
+			# the remote chance that this gets fixed someday.
+			String value
+		
+		# If the type is 'object', we might be dealing with an object or an array or
+		# null.
+		when "object"
+			
+			# Due to a specification blunder in ECMAScript, typeof null is 'object',
+			# so watch out for that case.
+			return "null"  unless value
+			
+			# Make an array to hold the partial results of stringifying this object value.
+			partial = []
+			
+			# Is the value an array?
+			if Object::toString.apply(value) is "[object Array]"
+				
+				# The value is an array. Stringify every element. Use null as a placeholder
+				# for non-JSON values.
+				length = value.length
+				i = 0
+				while i < length
+					partial[i] = str(i, value, true, '', indent) or "null"
+					i += 1
+				
+				# Join all of the elements together, separated with commas, and wrap them in
+				# brackets.
+				v = (if partial.length is 0
+						"[]" 
+					else 
+						arr_delim[0] + "\n" + partial.join(sep+"\n").replace(/^\n/,'').replace(/^/gm,gap) + mind + arr_delim[1]
+					)
+				gap = mind
+				return v
+			
+			# If the replacer is an array, use it to select the members to be stringified.
+			if rep and typeof rep is "object"
+				length = rep.length
+				i = 0
+				while i < length
+					if typeof rep[i] is "string"
+						k = rep[i]
+						v = str(k, value, true, gap, indent)
+						partial.push quote(k) + ": " + v  if v
+					i += 1
+			else               
+				# Otherwise, iterate through all of the keys in the object.
+				for k of value
+					if Object::hasOwnProperty.call(value, k)
+						v = str(k, value, false, '', indent)
+						partial.push quote(k) + ": " + v  if v
+			
+			# Join all of the member texts together, separated with commas,
+			# and wrap them in braces.
+			v = (if partial.length is 0 
+					"{}" 
+				else 
+					obj_delim[0] + "\n" + partial.join(sep+"\n").replace(/^\n/,'').replace(/^/gm,gap) + mind + obj_delim[1]
+				)
+			gap = mind
+			return v
+
 ion =
 	parse: (text, options) ->
 		#	trim the text
@@ -241,6 +356,38 @@ ion =
 						return array
 			return
 	]
+
+	# This is basicaly the opposite of parse
+	stringify: (value, replacer, space) ->
+		
+		# The stringify method takes a value and an optional replacer, and an optional
+		# space parameter, and returns a JSON text. The replacer can be a function
+		# that can replace values, or an array of strings that will select the keys.
+		# A default replacer method can be provided. Use of the space parameter can
+		# produce text that is more easily readable.
+		i = undefined
+		gap = ""
+		indent = ""
+		
+		# If the space parameter is a number, make an indent string containing that
+		# many spaces.
+		if typeof space is "number"
+			i = 0
+			while i < space
+				indent += " "
+				i += 1
+		
+		# If the space parameter is a string, it will be used as the indent string.
+		else indent = space  if typeof space is "string"
+		
+		# If there is a replacer, it must be a function or an array.
+		# Otherwise, throw an error.
+		rep = replacer
+		throw new Error("JSON.stringify")  if replacer and typeof replacer isnt "function" and (typeof replacer isnt "object" or typeof replacer.length isnt "number")
+		
+		# Make a fake root object containing our value under the key of ''.
+		# Return the result of stringifying the value.
+		return str("",{"": value},true,'',indent)
 
 if typeof module is 'undefined'
 	#	global.ion
