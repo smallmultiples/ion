@@ -200,7 +200,7 @@ ion =
 		text = text.trim()
 		#	split text into lines
 		nodes = []
-		for line, index in text.split '\r\n' when line.trim()[0] isnt '#'
+		for line, index in text.split '\n' when line.trim()[0] isnt '#'
 			indent = (if line.trim().length is 0 then indent else indent = line.match(/^\s*/)?[0]?.length) ? 0
 			nodes.push new Node line, index + 1, indent
 		#	nest the lines as children of a root node

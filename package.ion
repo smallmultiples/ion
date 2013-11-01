@@ -14,7 +14,7 @@ contributors:
 bin: {}
 scripts:
 	glass: node ./parser.js
-main: ./ion
+main: ./lib/ion
 repository:
 	type: git
 	url: https://github.com/krisnye/ion.git
