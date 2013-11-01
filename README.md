@@ -20,7 +20,14 @@ It is especially well suited for [configuration](/krisnye/ion/blob/master/packag
 #### Node
 
 	ion = require('ion');
+	# ion to json
 	object = ion.parse(iontext);
+	# json to ion
+	iontext = ion.stringify(object)
+	
+Known issues:
+
+* stringify currently fails in the array of arrays (matrix) example!
 
 #### Web
 
