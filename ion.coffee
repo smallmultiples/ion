@@ -198,6 +198,7 @@ nest = (nodes) ->
 obj_delim = ['','']
 arr_delim = ['','']
 sep = ''
+wordwrap_len = 75
 
 quote = (string) ->   
 	#dummy function for now...
@@ -235,8 +236,8 @@ str = (key, holder,first_run=false,gap=0,indent,rep) ->
 	# What happens next depends on the value's type.
 	switch typeof value
 		when "string"
-			if value.indexOf("\n") >= 0
-				"\n"+gap+wordwrap(value, 75, "\n"+gap)
+			if value.length>wordwrap_len || value.indexOf("\n") >= 0
+				"\n"+gap+wordwrap(value, wordwrap_len, "\n"+gap)
 			else
 				value
 		when "number"
