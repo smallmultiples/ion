@@ -212,7 +212,7 @@ wordwrap = (str, width, brk, cut) ->
 	regex = ".{1," + width + "}(\\s|$)" + ((if cut then "|.{" + width + "}|.+$" else "|\\S+?(\\s|$)"))
 	str.match(RegExp(regex, "g")).map((s)->s.replace(/\n$/,'')).join(brk)
 
-str = (key, holder,first_run=false,gap=0,indent,rep) ->    
+str = (key, holder,first_run=false,gap=0,indent,replacer) ->    
 	# Produce a string from holder[key].
 	i = undefined # The loop counter.
 	k = undefined
@@ -223,13 +223,18 @@ str = (key, holder,first_run=false,gap=0,indent,rep) ->
 	mind = gap
 	partial = undefined
 	value = holder[key]
-	
+
 	# If the value has a toJSON method, call it to obtain a replacement value.
 		
 	# If we were called with a replacer function, then call the replacer to
 	# obtain a replacement value.
-	value = rep.call(holder, key, value)  if typeof rep is "function"
-	
+	if typeof replacer is "function"
+		try
+			replaced = replacer.call(holder, key, value)  
+			return replaced
+		catch e
+			# Can't replace, move on
+
 	if not first_run
 		gap += indent
 
@@ -270,7 +275,7 @@ str = (key, holder,first_run=false,gap=0,indent,rep) ->
 				length = value.length
 				i = 0
 				while i < length
-					partial[i] = str(i, value, true, '', indent) or "null"
+					partial[i] = str(i, value, true, '', indent, replacer) or "null"
 					i += 1
 				
 				# Join all of the elements together, separated with commas, and wrap them in
@@ -284,20 +289,20 @@ str = (key, holder,first_run=false,gap=0,indent,rep) ->
 				return v
 			
 			# If the replacer is an array, use it to select the members to be stringified.
-			if rep and typeof rep is "object"
-				length = rep.length
+			if replacer and typeof replacer is "object"
+				length = replacer.length
 				i = 0
 				while i < length
-					if typeof rep[i] is "string"
-						k = rep[i]
-						v = str(k, value, true, gap, indent)
+					if typeof replacer[i] is "string"
+						k = replacer[i]
+						v = str(k, value, true, gap, indent, replacer)
 						partial.push quote(k) + ": " + v  if v
 					i += 1
 			else               
 				# Otherwise, iterate through all of the keys in the object.
 				for k of value
 					if Object::hasOwnProperty.call(value, k)
-						v = str(k, value, false, '', indent)
+						v = str(k, value, false, '', indent, replacer)
 						partial.push quote(k) + ": " + v  if v
 			
 			# Join all of the member texts together, separated with commas,
@@ -383,12 +388,11 @@ ion =
 		
 		# If there is a replacer, it must be a function or an array.
 		# Otherwise, throw an error.
-		rep = replacer
-		throw new Error("JSON.stringify")  if replacer and typeof replacer isnt "function" and (typeof replacer isnt "object" or typeof replacer.length isnt "number")
+		throw new Error("ION.stringify replacer")  if replacer and typeof replacer isnt "function" and (typeof replacer isnt "object" or typeof replacer.length isnt "number")
 		
 		# Make a fake root object containing our value under the key of ''.
 		# Return the result of stringifying the value.
-		return str("",{"": value},true,'',indent)
+		return str("",{"": value},true,'',indent,replacer)
 
 if typeof module is 'undefined'
 	#	global.ion
@@ -404,4 +408,4 @@ else
 			return console.log 'Usage: ion file.ion'
 		content = fs.readFileSync args[0], 'utf8'
 		object = ion.parse content
-		console.log JSON.stringify object, null, '    '
+		console.log(JSON.stringify(object, null, '    '))
