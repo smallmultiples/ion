@@ -7,11 +7,11 @@ Whenever possible, quotes, brackets and escape characters are not required and s
 It is especially well suited for [configuration](/krisnye/ion/blob/master/package.ion) files that might otherwise be written in [JSON](/krisnye/ion/blob/master/package.json).
 
 
-### Installation
+## Installation
 
 	npm install ion
 
-### Usage
+## Usage
 
 #### Command Line
 
@@ -27,7 +27,7 @@ It is especially well suited for [configuration](/krisnye/ion/blob/master/packag
 	
 Known issues:
 
-* stringify currently fails in the array of arrays (matrix) example!
+* stringify and code mirror plugin currently fail in the array of arrays (matrix) example!
 
 #### Web
 
@@ -189,3 +189,13 @@ Known issues:
         ]
 	}
 
+## CodeMirror
+
+Also included is a CodeMirror plugin, with example usage.
+
+
+## For developers
+
+To build the module from the git repository run:
+
+	npm run prepublish
