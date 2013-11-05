@@ -145,7 +145,7 @@ class Node
 	getValue: ->
 		options = {}
 		if @children?
-			if @isText
+			if not @hasColon and @isText
 				throw @children[0].error 'Children not expected'
 			value = @getComplexValue options
 		else
