@@ -332,7 +332,10 @@ ion =
 	#	extensible ion processors for converting unquoted text to other values
 	processors: [
 		(text) -> if text.match /^\s*null\s*$/ then return null
-		(text) -> if text.match /^\s*(true|false)\s*$/ then return Boolean text.trim()
+		(text) -> 
+			if text.match /^\s*(true|false|yes|no)\s*$/ 
+				if (text=='true' || text=='yes') then return true
+				else return false
 		(text) -> if text.match /^\s*[0-9]+(\.[0-9]+)?([eE][-+]?[0-9]+)?\s*$/ then return Number text.trim()
 		(text) -> if text.match /^\s*\d\d\d\d-\d\d-\d\d(T\d\d:\d\d(:\d\d(\.\d{1,3})?)?(Z|([+-]\d\d:\d\d))?)?\s*$/ then return new Date text.trim()
 		(text) -> if text.match /^\s*{}\s*$/ then return {}
