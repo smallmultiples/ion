@@ -42,9 +42,4 @@ array of objects:   # recognized as array of objects because of duplicated keys
     email: kris@gmail.com
     name: John White
     email: bitwhite@gmail.com
-array of objects as table:         # array of objects
-    name:            birth day:  age: sex: grade:
-    Sadera Michelle  1996-03-08  16   f    11
-    Orion Darwin     1998-06-13  14   m    9
-    Phoenix Nilsen   2006-07-01  6    m    1
-    Galileo Zyler    2010-03-23  2    m     
+dates: 2006-07, 2010-11

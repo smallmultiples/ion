@@ -165,7 +165,7 @@ processUnquoted = (text) ->
 
 isText = (tokens) ->
 	if tokens
-		punctuation = /[^\s\w]/
+		punctuation = /[^-\s\w]/
 		for token in tokens
 			if token.type is 'unquoted'
 				value = token.value
